@@ -1,0 +1,187 @@
+<link rel="import" href="//cdn.rawgit.com/download/polymer-cdn/1.2.3.2/lib/polymer/polymer.html">
+
+<dom-module id="cool-key">
+    <template>
+        <style>
+            a {
+                width: 50px;
+                padding: 10px;
+                margin: 5px;
+                border: 1px #f3f3f3 solid;
+                display: inline-block;
+                text-decoration: none;
+                color: #222;
+                box-sizing: border-box;
+                transition: all 0.1s ease;
+            }
+            a:hover, a.active {
+                background-color: #ddd;
+                border: #d3d3d3;
+                cursor: pointer;
+            }
+        </style>
+        <a id="key-{{key}}" href="#">{{key}}</a>
+    </template>
+    
+    <script>
+        var coolKey = Polymer({
+            is: 'cool-key',
+            properties: {
+                key: {
+                    type: Number,
+                    notify: true,
+                    readOnly: false
+                }
+            },
+            ready: function(){
+                this.listen(this, 'tap', 'tapHandler');
+            },
+            tapHandler: function (e) {
+                e.preventDefault();
+                var input = Polymer.dom(this.parentNode).querySelector('#pad-equation'),
+                    calc = this.parentNode.parentNode.parentNode,
+                    equ = input.value.trim();
+                switch (this.key) {
+                    case '\+':
+                    case '\-':
+                    case '\*':
+                    case '\/':
+                        var ch = equ.charAt(equ.length - 1);
+                        if (!(ch == '\+') && !(ch == '\-') && !(ch == '\*') && !(ch == '\/')) {
+                            if (equ.length > 0) {
+                                input.value += this.key;
+                            } else {
+                                if ((ch == '\+' || (ch == '-'))) {
+                                    input.value = this.key;
+                                }
+                            }
+                        }
+                        break;
+                    case 'c':
+                        input.value = 0;
+                        break;
+                    case '=':
+                        var total = 0;
+                        
+                        if (equ.indexOf('=') > 0) {
+                            input.value = 0;
+                            break;
+                        }
+                        total = eval(input.value);
+                        input.value += ' = '+total;
+                        break;
+                    default:
+                    if (input.value == 0) {
+                        input.value = this.key;
+                    } else {
+                        input.value += this.key;
+                    }
+                }
+                var x = calc._notifyPath('equation', input.value, true);
+            },
+        });
+    </script>
+</dom-module>
+
+<dom-module id="cool-pad">
+    <template>
+        <style>
+            div {
+                width: 200px;
+                margin: 0 auto;
+                padding: 5px;
+                border-top: 1px #e3e3e3 solid;
+                box-sizing: border-box;
+            }
+        </style>
+        
+        <div id="pad">
+            <input id="pad-equation" type="hidden" value="{{equation::change}}">
+        </div>
+    </template>
+    
+    <script>
+        Polymer({
+            is: 'cool-pad',
+            ready: function(){
+                var aK = this.appendKeys.bind(this);
+                this.keys.forEach(aK);
+            },
+            appendKeys: function(key){
+                var k = new coolKey();
+                k.key = key;
+                Polymer.dom(this.$.pad).appendChild(k);
+            }
+        });
+    </script>
+</dom-module>
+
+<dom-module id="cool-panel">
+    <template>
+        <style>
+            p {
+                width: 190px;
+                min-height: 20px;
+                margin: 15px auto;
+                text-align: right;
+                word-wrap: break-word;
+                vertical-align: bottom;
+                color: red;
+            }
+        </style>
+        
+        <p>{{equation}}</p>
+    </template>
+    
+    <script>
+        Polymer({
+            is: 'cool-panel',
+        });
+    </script>
+</dom-module>
+
+<dom-module id="cool-calc">
+    <template>
+        <style>
+            :host {
+                width: 200px;
+                margin: 15px auto;
+                padding: 0;
+                display: block;
+                border: 1px #e3e3e3 solid;
+                box-sizing: border-box;
+            }
+        </style>
+        
+        <cool-panel value="{{value}}" equation="{{equation}}"></cool-panel>
+        <cool-pad keys="{{keys}}" equation$="{{equation}}"></cool-pad>
+    </template>
+    
+    <script>
+        Polymer({
+            is: 'cool-calc',
+            properties: {
+                keys: {
+                    type: Array,
+                    notify: false,
+                    readOnly: true,
+                    value: function(){
+                        return ['+', '-', '*', '1','2','3','4','5','6','7','8','9', '/', '0', '.', 'c', '=', '00'];
+                    }
+                },
+                value: {
+                    type: String,
+                    value: '',
+                    notify: false,
+                    readOnly: false
+                },
+                equation: {
+                    type: String,
+                    value: '',
+                    notify: true,
+                    readOnly: false,
+                }
+            }
+        });
+    </script>
+</dom-module>

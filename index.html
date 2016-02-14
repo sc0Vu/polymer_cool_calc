@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="language" content="zh_TW">
+<meta name="robots" content="noarchive">
+<meta name="geo.country" content="tw">
+<meta name="author" content="PetarLai">
+<style is="custom-style">
+    html, body, div {
+        width: 100%;
+        text-align: center;
+        font-family: '微軟正黑體';
+    }
+</style>
+<script src="//cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.20/webcomponents.min.js"></script>
+<link rel="import" href="calc_import.html">
+
+<cool-calc></cool-calc>
+
+<script>
+(function (d) {
+    var keyPad = d.getElementById('pad');
+    d.body.addEventListener('keydown', function (e) {
+        var key = e.key;
+        
+        switch (key) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '\+':
+            case '\-':
+            case '\*':
+            case '\/':
+            case '\.':
+                d.getElementById('key-'+key).classList.add('active');
+                d.getElementById('key-'+key).click();
+                break;
+        }
+        
+        if (e.keyCode == 13) {
+            d.getElementById('key-=').click();
+        }
+    }, false);
+    d.body.addEventListener('keyup', function (e) {
+        var key = e.key;
+        
+        switch (key) {
+            case '0':
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+            case '\+':
+            case '\-':
+            case '\*':
+            case '\/':
+            case '\.':
+                d.getElementById('key-'+key).classList.remove('active');
+                break;
+        }
+    }, false);
+})(document);
+</script>
