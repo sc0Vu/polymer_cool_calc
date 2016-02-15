@@ -40,14 +40,16 @@
                 e.preventDefault();
                 var input = Polymer.dom(this.parentNode).querySelector('#pad-equation'),
                     calc = this.parentNode.parentNode.parentNode,
-                    equ = input.value.trim();
+                    equ = input.value.trim(),
+                    isEqual = (equ.indexOf('=') > 0) ? true : false;
                 switch (this.key) {
                     case '\+':
                     case '\-':
                     case '\*':
                     case '\/':
+                    case '\.':
                         var ch = equ.charAt(equ.length - 1);
-                        if (!(ch == '\+') && !(ch == '\-') && !(ch == '\*') && !(ch == '\/')) {
+                        if (!(ch == '\+') && !(ch == '\-') && !(ch == '\*') && !(ch == '\/') && !(ch == '\.')) {
                             if (equ.length > 0) {
                                 input.value += this.key;
                             } else {
@@ -62,18 +64,26 @@
                         break;
                     case '=':
                         var total = 0;
+                            
+                        if (equ == 0) {
+                            break;
+                        }
                         
-                        if (equ.indexOf('=') > 0) {
+                        if (isEqual) {
                             input.value = 0;
                             break;
                         }
+                        
                         total = eval(input.value);
                         input.value += ' = '+total;
                         break;
                     default:
-                    if (input.value == 0) {
+                    if (equ == 0 && equ.indexOf('\.') < 0) {
                         input.value = this.key;
                     } else {
+                        if (isEqual) {
+                            input.value = '';
+                        }
                         input.value += this.key;
                     }
                 }
